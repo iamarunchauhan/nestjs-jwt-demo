@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { PrimaryGeneratedColumn, BaseEntity, Column, Entity } from 'typeorm';
+import { PrimaryGeneratedColumn, BaseEntity, Column, Entity, IsNull } from 'typeorm';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -17,4 +17,10 @@ export class Users extends BaseEntity {
 
     @Column()
     city: string;
+
+    @Column({nullable : true})
+    forgetpasswordtoken : string;
+
+    @Column({nullable : true})
+    tokencreateddate : Date;
 }

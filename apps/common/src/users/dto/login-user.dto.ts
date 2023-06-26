@@ -8,6 +8,6 @@ export class LoginUserDTO {
     password: string;
 }
 
-export class LoginResponseDto {
+export class LoginResponseDTO {
     accessToken : string;
 }

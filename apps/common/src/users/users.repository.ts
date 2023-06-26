@@ -1,41 +1,15 @@
 import { Repository, EntityRepository } from 'typeorm';
-import { CreateNewUserDTO } from './dto/create-newuser.dto';
 import { ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './dto/login-user.dto';
 import { Users } from './entities/user.entity';
 import { CreateUserDto, RegisterResponseDto } from './dto/create-user.dto';
+import { RpcException } from '@nestjs/microservices';
 
 @EntityRepository(Users)
 export class UsersRepository extends Repository<Users> {
 
-    public async createUser(createUserDTO: CreateNewUserDTO,): Promise<Users> {
-        const { name, email, password, city } = createUserDTO;
-
-        const user = new Users();
-        user.name = name;
-        user.email = email;
-
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
-        console.log(hashedPassword);
-        user.password = hashedPassword;
-        user.city = city;
-
-        try {
-            await user.save();
-            delete user.password;
-            return user;
-        } catch (error) {
-            if(error.code === '23505'){ //for duplicate email ID
-                throw new ConflictException('Email ID already exists!');
-            } else {
-                throw new InternalServerErrorException();
-            }
-        }
-    }
-
-    public async register(createUserDto: CreateUserDto): Promise<Users> {
+    async registerUser(createUserDto: CreateUserDto): Promise<RegisterResponseDto> {
         const { name, email, password, city } = createUserDto;
 
         const user = new Users();
@@ -50,16 +24,27 @@ export class UsersRepository extends Repository<Users> {
         try {
             await user.save();
             delete user.password;
-            //return { success : true };
-            return user;
+            return { success : true };
         } catch (error) {
             if(error.code === '23505'){ //for duplicate email ID
-                throw new ConflictException('Email ID already exists!');
+                throw new RpcException('Email ID already exists!');
             } else {
                 throw new InternalServerErrorException();
             }
         }
     }
+
+    // async resetpassword(token, newPassword) : Promise<ChangePasswordResponseDTO>{
+    //     const user = await this.findOne({ where : { forgetpasswordtoken : token } } );
+
+    //     if (!user) {
+    //         throw new NotFoundException('User details not found');
+    //     }
+        
+    //     const changePasswordResponseDTO : ChangePasswordResponseDTO = 
+    //     {passwordChanged : "Password changed successfully "};
+    //     return changePasswordResponseDTO;
+    // }
 
     // async loginUser(loginUserDto : LoginUserDTO) : Promise<Users> {
     //     const { email, password } = loginUserDto;

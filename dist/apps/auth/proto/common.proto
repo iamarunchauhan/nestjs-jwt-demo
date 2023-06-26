@@ -3,9 +3,11 @@ syntax = "proto3";
 package common;
 
 service CommonService {
-  rpc find(User) returns (Response);
+  rpc find(User) returns (UserDetailsResponse);
   rpc register(RegisterUser) returns (RegisterResponse);
   rpc login(LoginUser) returns (LoginResponse);
+  rpc forgetpassword(ForgetPasswordRequest) returns (ForgetPasswordResponse);
+  rpc resetpassword(ResetPasswordRequest) returns (ResetPasswordResponse);
 }
 
 message Account {
@@ -21,6 +23,17 @@ message User {
 
 message Response {
   repeated Account accounts = 1; 
+}
+
+message UserDetails {
+  int32 id = 1;
+  string email = 2;
+  string password = 3;
+  string city = 4;
+}
+
+message UserDetailsResponse {
+  repeated UserDetails users = 1;
 }
 
 message RegisterUser {
@@ -40,5 +53,22 @@ message LoginUser {
 }
 
 message LoginResponse {
+  string accessToken = 1;
+}
+
+message ForgetPasswordRequest {
+  string email=1;
+}
+
+message ForgetPasswordResponse {
+  string accessToken = 1;
+}
+
+message ResetPasswordRequest {
   string token = 1;
+  string newPassword = 2;
+}
+
+message ResetPasswordResponse {
+  string passwordChanged = 1;
 }

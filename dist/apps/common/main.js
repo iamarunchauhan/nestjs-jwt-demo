@@ -56,12 +56,16 @@ const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const common_controller_1 = __webpack_require__(/*! ./common.controller */ "./apps/common/src/common.controller.ts");
 const common_service_1 = __webpack_require__(/*! ./common.service */ "./apps/common/src/common.service.ts");
 const users_module_1 = __webpack_require__(/*! ./users/users.module */ "./apps/common/src/users/users.module.ts");
+const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 let CommonModule = class CommonModule {
 };
 CommonModule = __decorate([
     (0, common_1.Module)({
         imports: [
             users_module_1.UsersModule,
+            config_1.ConfigModule.forRoot({
+                envFilePath: [`.env.stage.dev`],
+            }),
         ],
         controllers: [common_controller_1.CommonController],
         providers: [common_service_1.CommonService],
@@ -138,7 +142,6 @@ exports.DatabaseModule = DatabaseModule;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.databaseProviders = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-const account_entity_1 = __webpack_require__(/*! ./users/entities/account.entity */ "./apps/common/src/users/entities/account.entity.ts");
 const user_entity_1 = __webpack_require__(/*! ./users/entities/user.entity */ "./apps/common/src/users/entities/user.entity.ts");
 exports.databaseProviders = [
     {
@@ -151,32 +154,11 @@ exports.databaseProviders = [
                 username: 'postgres',
                 password: 'admin',
                 database: 'nestjsexperiment',
-                entities: [account_entity_1.Accounts, user_entity_1.Users],
+                entities: [user_entity_1.Users],
                 synchronize: true,
             });
             return dataSource.initialize();
         },
-    },
-];
-
-
-/***/ }),
-
-/***/ "./apps/common/src/users/accounts.provider.ts":
-/*!****************************************************!*\
-  !*** ./apps/common/src/users/accounts.provider.ts ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.accountProviders = void 0;
-const account_entity_1 = __webpack_require__(/*! ./entities/account.entity */ "./apps/common/src/users/entities/account.entity.ts");
-exports.accountProviders = [
-    {
-        provide: 'ACCOUNT_REPOSITORY',
-        useFactory: (dataSource) => dataSource.getRepository(account_entity_1.Accounts),
-        inject: ['DATA_SOURCE'],
     },
 ];
 
@@ -191,16 +173,16 @@ exports.accountProviders = [
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserDto = exports.ResponseDto = exports.AccountDto = void 0;
-class AccountDto {
-}
-exports.AccountDto = AccountDto;
-class ResponseDto {
-}
-exports.ResponseDto = ResponseDto;
+exports.UserDetailsResponseDto = exports.UserDetailsDto = exports.UserDto = void 0;
 class UserDto {
 }
 exports.UserDto = UserDto;
+class UserDetailsDto {
+}
+exports.UserDetailsDto = UserDetailsDto;
+class UserDetailsResponseDto {
+}
+exports.UserDetailsResponseDto = UserDetailsResponseDto;
 
 
 /***/ }),
@@ -252,6 +234,43 @@ exports.RegisterResponseDto = RegisterResponseDto;
 
 /***/ }),
 
+/***/ "./apps/common/src/users/dto/forget-password.dto.ts":
+/*!**********************************************************!*\
+  !*** ./apps/common/src/users/dto/forget-password.dto.ts ***!
+  \**********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ForgetPasswordResponseDto = exports.ForgetPasswordDTO = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class ForgetPasswordDTO {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ForgetPasswordDTO.prototype, "email", void 0);
+exports.ForgetPasswordDTO = ForgetPasswordDTO;
+class ForgetPasswordResponseDto {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], ForgetPasswordResponseDto.prototype, "forgetPasswordToken", void 0);
+exports.ForgetPasswordResponseDto = ForgetPasswordResponseDto;
+
+
+/***/ }),
+
 /***/ "./apps/common/src/users/dto/login-user.dto.ts":
 /*!*****************************************************!*\
   !*** ./apps/common/src/users/dto/login-user.dto.ts ***!
@@ -269,7 +288,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LoginResponseDto = exports.LoginUserDTO = void 0;
+exports.LoginResponseDTO = exports.LoginUserDTO = void 0;
 const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
 class LoginUserDTO {
 }
@@ -282,17 +301,17 @@ __decorate([
     __metadata("design:type", String)
 ], LoginUserDTO.prototype, "password", void 0);
 exports.LoginUserDTO = LoginUserDTO;
-class LoginResponseDto {
+class LoginResponseDTO {
 }
-exports.LoginResponseDto = LoginResponseDto;
+exports.LoginResponseDTO = LoginResponseDTO;
 
 
 /***/ }),
 
-/***/ "./apps/common/src/users/entities/account.entity.ts":
-/*!**********************************************************!*\
-  !*** ./apps/common/src/users/entities/account.entity.ts ***!
-  \**********************************************************/
+/***/ "./apps/common/src/users/dto/reset-password.dto.ts":
+/*!*********************************************************!*\
+  !*** ./apps/common/src/users/dto/reset-password.dto.ts ***!
+  \*********************************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -306,30 +325,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Accounts = void 0;
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
-let Accounts = class Accounts {
-};
+exports.ResetPasswordResponseDTO = exports.ResetPasswordRequestDTO = void 0;
+const class_validator_1 = __webpack_require__(/*! class-validator */ "class-validator");
+class ResetPasswordRequestDTO {
+}
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], Accounts.prototype, "user_id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ length: 50 }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Accounts.prototype, "username", void 0);
+], ResetPasswordRequestDTO.prototype, "token", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 50 }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Accounts.prototype, "password", void 0);
+], ResetPasswordRequestDTO.prototype, "newPassword", void 0);
+exports.ResetPasswordRequestDTO = ResetPasswordRequestDTO;
+class ResetPasswordResponseDTO {
+}
 __decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Accounts.prototype, "email", void 0);
-Accounts = __decorate([
-    (0, typeorm_1.Entity)()
-], Accounts);
-exports.Accounts = Accounts;
+], ResetPasswordResponseDTO.prototype, "passwordChanged", void 0);
+exports.ResetPasswordResponseDTO = ResetPasswordResponseDTO;
 
 
 /***/ }),
@@ -350,6 +365,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Users = void 0;
 const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
@@ -375,6 +391,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Users.prototype, "city", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Users.prototype, "forgetpasswordtoken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], Users.prototype, "tokencreateddate", void 0);
 Users = __decorate([
     (0, typeorm_1.Entity)()
 ], Users);
@@ -414,12 +438,11 @@ const users_repository_1 = __webpack_require__(/*! ./users.repository */ "./apps
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(usersRepository, configService) {
         super({
-            secretOrKey: 'abcd',
+            secretOrKey: configService.get('JWT_SECRET'),
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken()
         });
         this.usersRepository = usersRepository;
         this.configService = configService;
-        console.log("Inside Super ");
     }
     async validate(payload) {
         const { email } = payload;
@@ -440,6 +463,93 @@ exports.JwtStrategy = JwtStrategy;
 
 /***/ }),
 
+/***/ "./apps/common/src/users/mail.module.ts":
+/*!**********************************************!*\
+  !*** ./apps/common/src/users/mail.module.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MailModule = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const mail_service_1 = __webpack_require__(/*! ./mail.service */ "./apps/common/src/users/mail.service.ts");
+let MailModule = class MailModule {
+};
+MailModule = __decorate([
+    (0, common_1.Module)({
+        providers: [mail_service_1.MailService],
+        exports: [mail_service_1.MailService],
+    })
+], MailModule);
+exports.MailModule = MailModule;
+
+
+/***/ }),
+
+/***/ "./apps/common/src/users/mail.service.ts":
+/*!***********************************************!*\
+  !*** ./apps/common/src/users/mail.service.ts ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MailService = void 0;
+const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
+const nodemailer = __webpack_require__(/*! nodemailer */ "nodemailer");
+let MailService = class MailService {
+    constructor() {
+        this.transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'anuragrana012@gmail.com',
+                pass: 'sxryaqrvuxmuztkm',
+            },
+        });
+    }
+    async sendEmail(to, subject, text) {
+        try {
+            const info = await this.transporter.sendMail({
+                from: 'anuragrana012@gmail.com',
+                to,
+                subject,
+                text,
+            });
+            console.log('Email sent:', info.messageId);
+        }
+        catch (error) {
+            console.error('Error sending email:', error);
+            throw new Error('Failed to send email.');
+        }
+    }
+};
+MailService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [])
+], MailService);
+exports.MailService = MailService;
+
+
+/***/ }),
+
 /***/ "./apps/common/src/users/users.controller.ts":
 /*!***************************************************!*\
   !*** ./apps/common/src/users/users.controller.ts ***!
@@ -456,7 +566,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b, _c, _d, _e, _f, _g;
+var UsersController_1;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
@@ -465,21 +576,34 @@ const create_user_dto_1 = __webpack_require__(/*! ./dto/create-user.dto */ "./ap
 const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
 const accounts_dto_1 = __webpack_require__(/*! ./dto/accounts.dto */ "./apps/common/src/users/dto/accounts.dto.ts");
 const login_user_dto_1 = __webpack_require__(/*! ./dto/login-user.dto */ "./apps/common/src/users/dto/login-user.dto.ts");
-let UsersController = class UsersController {
+const forget_password_dto_1 = __webpack_require__(/*! ./dto/forget-password.dto */ "./apps/common/src/users/dto/forget-password.dto.ts");
+const reset_password_dto_1 = __webpack_require__(/*! ./dto/reset-password.dto */ "./apps/common/src/users/dto/reset-password.dto.ts");
+let UsersController = UsersController_1 = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
+        this.logger = new common_1.Logger(UsersController_1.name);
     }
     findAll(userRes) {
+        this.logger.log('Inside gRPC Method - find');
         const res = this.usersService.findAll();
         return res;
     }
     register(createUserDto) {
-        const res = this.usersService.register(createUserDto);
+        this.logger.log('Inside gRPC Method - register');
+        const res = this.usersService.registerUser(createUserDto);
         return res;
     }
     login(loginUserDto) {
-        console.log('inside user controller');
+        this.logger.log('Inside gRPC Method - login');
         return this.usersService.loginUser(loginUserDto);
+    }
+    forgetpassword(forgetPasswordDTO) {
+        this.logger.log('Inside gRPC Method - forgetpassword');
+        return this.usersService.forgetpassword(forgetPasswordDTO);
+    }
+    resetpassword(resetPasswordRequestDTO) {
+        this.logger.log('Inside gRPC Method - resetpassword');
+        return this.usersService.resetpassword(resetPasswordRequestDTO);
     }
 };
 __decorate([
@@ -500,7 +624,19 @@ __decorate([
     __metadata("design:paramtypes", [typeof (_f = typeof login_user_dto_1.LoginUserDTO !== "undefined" && login_user_dto_1.LoginUserDTO) === "function" ? _f : Object]),
     __metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], UsersController.prototype, "login", null);
-UsersController = __decorate([
+__decorate([
+    (0, microservices_1.GrpcMethod)('CommonService', 'forgetpassword'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_h = typeof forget_password_dto_1.ForgetPasswordDTO !== "undefined" && forget_password_dto_1.ForgetPasswordDTO) === "function" ? _h : Object]),
+    __metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+], UsersController.prototype, "forgetpassword", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('CommonService', 'resetpassword'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_k = typeof reset_password_dto_1.ResetPasswordRequestDTO !== "undefined" && reset_password_dto_1.ResetPasswordRequestDTO) === "function" ? _k : Object]),
+    __metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
+], UsersController.prototype, "resetpassword", null);
+UsersController = UsersController_1 = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
 ], UsersController);
@@ -527,25 +663,27 @@ exports.UsersModule = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const users_service_1 = __webpack_require__(/*! ./users.service */ "./apps/common/src/users/users.service.ts");
 const users_controller_1 = __webpack_require__(/*! ./users.controller */ "./apps/common/src/users/users.controller.ts");
-const accounts_provider_1 = __webpack_require__(/*! ./accounts.provider */ "./apps/common/src/users/accounts.provider.ts");
 const database_module_1 = __webpack_require__(/*! ../database.module */ "./apps/common/src/database.module.ts");
 const users_repository_1 = __webpack_require__(/*! ./users.repository */ "./apps/common/src/users/users.repository.ts");
 const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
 const config_1 = __webpack_require__(/*! @nestjs/config */ "@nestjs/config");
 const passport_1 = __webpack_require__(/*! @nestjs/passport */ "@nestjs/passport");
 const jwt_strategy_1 = __webpack_require__(/*! ./jwt.strategy */ "./apps/common/src/users/jwt.strategy.ts");
+const users_provider_1 = __webpack_require__(/*! ./users.provider */ "./apps/common/src/users/users.provider.ts");
+const mail_module_1 = __webpack_require__(/*! ./mail.module */ "./apps/common/src/users/mail.module.ts");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [database_module_1.DatabaseModule,
+            mail_module_1.MailModule,
             config_1.ConfigModule,
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: async (configService) => ({
-                    secret: 'abcd',
+                    secret: configService.get('JWT_SECRET'),
                     signOptions: {
                         expiresIn: 3600,
                     }
@@ -553,11 +691,32 @@ UsersModule = __decorate([
             }),
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [...accounts_provider_1.accountProviders, users_service_1.UsersService, users_repository_1.UsersRepository, jwt_strategy_1.JwtStrategy, jwt_1.JwtService],
+        providers: [...users_provider_1.usersProviders, config_1.ConfigService, users_service_1.UsersService, jwt_strategy_1.JwtStrategy, users_repository_1.UsersRepository],
         exports: [jwt_strategy_1.JwtStrategy, passport_1.PassportModule]
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;
+
+
+/***/ }),
+
+/***/ "./apps/common/src/users/users.provider.ts":
+/*!*************************************************!*\
+  !*** ./apps/common/src/users/users.provider.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.usersProviders = void 0;
+const user_entity_1 = __webpack_require__(/*! ./entities/user.entity */ "./apps/common/src/users/entities/user.entity.ts");
+exports.usersProviders = [
+    {
+        provide: 'USERS_REPOSITORY',
+        useFactory: (dataSource) => dataSource.getRepository(user_entity_1.Users),
+        inject: ['DATA_SOURCE'],
+    },
+];
 
 
 /***/ }),
@@ -581,32 +740,9 @@ const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
 const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
 const user_entity_1 = __webpack_require__(/*! ./entities/user.entity */ "./apps/common/src/users/entities/user.entity.ts");
+const microservices_1 = __webpack_require__(/*! @nestjs/microservices */ "@nestjs/microservices");
 let UsersRepository = class UsersRepository extends typeorm_1.Repository {
-    async createUser(createUserDTO) {
-        const { name, email, password, city } = createUserDTO;
-        const user = new user_entity_1.Users();
-        user.name = name;
-        user.email = email;
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
-        console.log(hashedPassword);
-        user.password = hashedPassword;
-        user.city = city;
-        try {
-            await user.save();
-            delete user.password;
-            return user;
-        }
-        catch (error) {
-            if (error.code === '23505') {
-                throw new common_1.ConflictException('Email ID already exists!');
-            }
-            else {
-                throw new common_1.InternalServerErrorException();
-            }
-        }
-    }
-    async register(createUserDto) {
+    async registerUser(createUserDto) {
         const { name, email, password, city } = createUserDto;
         const user = new user_entity_1.Users();
         user.name = name;
@@ -618,11 +754,11 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
         try {
             await user.save();
             delete user.password;
-            return user;
+            return { success: true };
         }
         catch (error) {
             if (error.code === '23505') {
-                throw new common_1.ConflictException('Email ID already exists!');
+                throw new microservices_1.RpcException('Email ID already exists!');
             }
             else {
                 throw new common_1.InternalServerErrorException();
@@ -661,29 +797,29 @@ var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const common_1 = __webpack_require__(/*! @nestjs/common */ "@nestjs/common");
-const typeorm_1 = __webpack_require__(/*! typeorm */ "typeorm");
 const bcrypt = __webpack_require__(/*! bcrypt */ "bcrypt");
 const users_repository_1 = __webpack_require__(/*! ./users.repository */ "./apps/common/src/users/users.repository.ts");
 const jwt_1 = __webpack_require__(/*! @nestjs/jwt */ "@nestjs/jwt");
+const mail_service_1 = __webpack_require__(/*! ./mail.service */ "./apps/common/src/users/mail.service.ts");
 let UsersService = class UsersService {
-    constructor(accountsRepository, usersRepository, jwtService) {
-        this.accountsRepository = accountsRepository;
+    constructor(usersRepository, jwtService, mailService) {
         this.usersRepository = usersRepository;
         this.jwtService = jwtService;
+        this.mailService = mailService;
     }
     async findAll() {
         try {
-            const res = await this.accountsRepository.find();
+            const res = await this.usersRepository.find();
             console.log(res);
-            return { accounts: res };
+            return { users: res };
         }
         catch (e) {
             console.log(e);
         }
     }
-    async register(createUserDTO) {
+    async registerUser(createUserDTO) {
         try {
-            return await this.usersRepository.register(createUserDTO);
+            return await this.usersRepository.registerUser(createUserDTO);
         }
         catch (e) {
             console.log(e);
@@ -704,14 +840,56 @@ let UsersService = class UsersService {
         }
         const payload = { email };
         const accessToken = await this.jwtService.sign(payload);
-        return user;
+        const loginResponseDTO = { accessToken: accessToken };
+        return loginResponseDTO;
+    }
+    async forgetpassword(forgetPasswordDTO) {
+        const { email } = forgetPasswordDTO;
+        console.log(forgetPasswordDTO);
+        const user = await this.usersRepository.findOne({ where: { email: email } });
+        console.log(user);
+        if (!user) {
+            throw new common_1.NotFoundException('User details not found');
+        }
+        const payload = { email };
+        const forgetPasswordToken = await this.jwtService.sign(payload);
+        console.log(forgetPasswordToken);
+        console.log(new Date());
+        var today = new Date();
+        today.setHours(today.getHours() + 1);
+        await this.usersRepository.update({ id: user.id }, {
+            forgetpasswordtoken: forgetPasswordToken,
+            tokencreateddate: today
+        });
+        const forgetPasswordTokenString = `Please find your forget password token : ${forgetPasswordToken}`;
+        await this.mailService.sendEmail(email, 'Forget Password Token', forgetPasswordTokenString);
+        const forgetPasswordResponseDTO = { forgetPasswordToken: forgetPasswordToken };
+        return forgetPasswordResponseDTO;
+    }
+    async resetpassword(resetPasswordRequestDTO) {
+        console.log("Reset password user service");
+        const { token, newPassword } = resetPasswordRequestDTO;
+        console.log(token);
+        console.log(newPassword);
+        const user = await this.usersRepository.findOne({ where: { forgetpasswordtoken: token } });
+        console.log(user);
+        if (!user) {
+            throw new common_1.NotFoundException('User details not found');
+        }
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        this.usersRepository.update({ id: user.id }, {
+            password: hashedPassword,
+            forgetpasswordtoken: ""
+        });
+        const resetPasswordResponseDTO = { passwordChanged: "Password changed successfully " };
+        return resetPasswordResponseDTO;
     }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('ACCOUNT_REPOSITORY')),
-    __param(1, (0, common_1.Inject)(users_repository_1.UsersRepository)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object, typeof (_b = typeof users_repository_1.UsersRepository !== "undefined" && users_repository_1.UsersRepository) === "function" ? _b : Object, typeof (_c = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _c : Object])
+    __param(0, (0, common_1.Inject)(users_repository_1.UsersRepository)),
+    __metadata("design:paramtypes", [typeof (_a = typeof users_repository_1.UsersRepository !== "undefined" && users_repository_1.UsersRepository) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object, typeof (_c = typeof mail_service_1.MailService !== "undefined" && mail_service_1.MailService) === "function" ? _c : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 
@@ -805,6 +983,16 @@ module.exports = require("bcrypt");
 /***/ ((module) => {
 
 module.exports = require("class-validator");
+
+/***/ }),
+
+/***/ "nodemailer":
+/*!*****************************!*\
+  !*** external "nodemailer" ***!
+  \*****************************/
+/***/ ((module) => {
+
+module.exports = require("nodemailer");
 
 /***/ }),
 

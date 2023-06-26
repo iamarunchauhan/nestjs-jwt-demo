@@ -3,6 +3,7 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { CommonGrpcServicesInterface } from './common.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { LoginUserDTO } from '../dto/login-user.dto';
+import { ForgetPasswordDTO } from '../dto/forget-password.dto';
 
 @Injectable()
 export class CommonService {
@@ -16,7 +17,7 @@ export class CommonService {
   }
 
   async find() {
-    const res = await this.commonGrpcService.find({ user: 'test' }).toPromise();
+    const res = await this.commonGrpcService.find({ user: 'arunchauhan2319@gmail.com' }).toPromise();
     return res;
   }
 
@@ -26,8 +27,22 @@ export class CommonService {
   }
 
   async login(loginUserDto : LoginUserDTO) {
-    console.log("Inside Common Service");
     const res = await this.commonGrpcService.login(loginUserDto).toPromise();
+    return res;
+  }
+
+  async forgetpassword(forgetPasswordDTO : ForgetPasswordDTO) {
+    const res = await this.commonGrpcService.forgetpassword(forgetPasswordDTO).toPromise();
+    return res;
+  }
+
+  async resetpassword(resetPasswordRequestDTO) {
+    const res = await this.commonGrpcService.resetpassword(resetPasswordRequestDTO).toPromise();
+    return res;
+  }
+
+  async fetchdetails(req) {
+    const res = await this.commonGrpcService.fetchdetails(req).toPromise();
     return res;
   }
 }

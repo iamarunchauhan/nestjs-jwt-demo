@@ -1,12 +1,16 @@
 import { Observable } from 'rxjs';
-import { CreateUserDTO } from '../dto/create-user.dto';
+import { CreateUserDTO, RegisterResponseDto } from '../dto/create-user.dto';
+import { ForgetPasswordDTO, ForgetPasswordResponseDto } from '../dto/forget-password.dto';
 import { LoginResponseDto, LoginUserDTO } from '../dto/login-user.dto';
-import { Users } from '../entities/user.entity';
+import { ResetPasswordRequestDTO, ResetPasswordResponseDTO } from '../dto/reset-password.dto';
 
 interface CommonGrpcServicesInterface {
   find(req: IUser): Observable<any>;
-  register(createUserDto : CreateUserDTO): Observable<Users>;
+  register(createUserDto : CreateUserDTO): Observable<RegisterResponseDto>;
   login(loginUserDto : LoginUserDTO) : Observable<LoginResponseDto>;
+  forgetpassword(forgetPasswordDTO : ForgetPasswordDTO) : Observable<ForgetPasswordResponseDto>;
+  resetpassword(resetPasswordRequestDTO : ResetPasswordRequestDTO) : Observable<ResetPasswordResponseDTO>;
+  fetchdetails(req : Request) : Observable<any>;
 }
 
 interface IUser {

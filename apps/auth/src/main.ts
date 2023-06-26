@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Authnetication-Microservice')
+    .setTitle('Authentication-Microservice')
     .setDescription('Authentication Microservice')
     .setVersion('1.0')
     .addTag('auth-module')

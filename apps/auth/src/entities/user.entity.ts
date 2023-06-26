@@ -17,4 +17,10 @@ export class Users extends BaseEntity {
 
     @Column()
     city: string;
+
+    @Column({nullable : true})
+    forgetpasswordtoken : string;
+
+    @Column({nullable : true})
+    tokencreateddate : Date;
 }

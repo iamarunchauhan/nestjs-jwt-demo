@@ -11,16 +11,13 @@ import { UsersRepository } from "./users.repository";
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(@InjectRepository(UsersRepository)
         private usersRepository: UsersRepository,
-        private configService: ConfigService
+        
+        private configService : ConfigService,
     ) { 
         super({
-            
-            //secretOrKey : configService.get('JWT_SECRET'),
-            secretOrKey : 'abcd',
+            secretOrKey : configService.get('JWT_SECRET'),
             jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken()
         });
-
-        console.log("Inside Super ");
     }
 
     async validate (payload : JwtPayload) : Promise<Users> {
